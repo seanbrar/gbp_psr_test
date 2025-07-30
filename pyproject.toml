@@ -22,8 +22,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/seanbrar/gemini-batch-prediction"
-Repository = "https://github.com/seanbrar/gemini-batch-prediction"
+Homepage = "https://github.com/seanbrar/gbp_psr_test"
+Repository = "https://github.com/seanbrar/gbp_psr_test"
 
 [project.optional-dependencies]
 dev = [
