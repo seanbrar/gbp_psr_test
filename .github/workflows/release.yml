@@ -43,4 +43,4 @@ jobs:
       - name: Create and Publish Release
         env:
           GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_PAT }}
-        run: semantic-release version
+        run: semantic-release -vv version
