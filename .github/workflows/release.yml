@@ -42,9 +42,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Step 5: Run the release.
+      # Step 5: Run the release with maximum verbosity
       - name: Create and Publish Release
         env:
-          # The PAT is passed as GH_TOKEN for the GitHub API.
           GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_PAT }}
-        run: semantic-release publish
+        # Add the -vv flag for debug-level output
+        run: semantic-release -vv publish
