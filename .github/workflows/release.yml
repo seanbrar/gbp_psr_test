@@ -1,6 +1,5 @@
 name: Release
 
-# Trigger manually only, with no inputs.
 on:
   workflow_dispatch:
 
@@ -10,41 +9,35 @@ jobs:
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: false
-    # These permissions are still required.
     permissions:
       contents: write
       issues: write
       pull-requests: write
 
     steps:
-      # Step 1: Checkout the code using the PAT for authentication.
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
 
-      # Step 2: Set up the correct Python version.
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
 
-      # Step 3: Install all dependencies from your pyproject.toml.
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install .[dev]
 
-      # Step 4: Configure the Git user for the release commit.
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Step 5: Run the release with maximum verbosity
       - name: Create and Publish Release
         env:
           GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_PAT }}
-        # Add the -vv flag for debug-level output
-        run: semantic-release -vv publish
+        # Use the 'version' command to create the release.
+        run: semantic-release version
