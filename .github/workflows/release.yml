@@ -7,61 +7,52 @@ name: Release
         description: 'Run in dry-run mode to preview changes'
         required: false
         type: boolean
-        default: true # Defaults to dry-run to prevent accidental releases.
+        default: true
 
 jobs:
   release:
     runs-on: ubuntu-latest
-
-    # Prevents multiple instances of this release job from running at the same time,
-    # which avoids race conditions where two releases could be created for the same code.
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: false
-
-    # Defines the permissions granted to the GITHUB_TOKEN for this job.
-    # These are required by semantic-release to interact with the repository.
     permissions:
-      contents: write      # To push commits (for version bumps) and create tags/releases.
-      issues: write        # To comment on issues fixed in the release.
-      pull-requests: write # To comment on PRs included in the release.
+      contents: write
+      issues: write
+      pull-requests: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          # Fetches the entire Git history, which semantic-release needs
-          # to analyze all commits since the last release.
           fetch-depth: 0
-          ssh-key: ${{ secrets.RELEASE_WORKFLOW_DEPLOY_KEY }}
+          # Use the PAT to authenticate the checkout and subsequent push.
+          token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
 
-      - name: Install build dependencies
-        run: python -m pip install build
-
-      - name: Create and Publish Release
-        id: release
-        uses: python-semantic-release/python-semantic-release@v10.2.0
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          # The action also needs to be authenticated with the PAT.
-          github_token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
-          no_operation_mode: ${{ github.event.inputs.dry_run }}
+          python-version: "3.13"
 
-      # Dry run summary with next steps
-      - name: Dry Run Summary
-        if: steps.release.outputs.released == 'false' && github.event.inputs.dry_run == true
+      - name: Install dependencies
         run: |
-            {
-              echo "## 🛡️ Dry Run Completed"
-              echo "A new release **v${{ steps.release.outputs.version }}** is ready to be published."
-              echo "To publish, re-run this workflow with **dry_run** set to **false**."
-            } >> "$GITHUB_STEP_SUMMARY"
+          python -m pip install --upgrade pip
+          # Install all project dependencies, including semantic-release and build
+          pip install .[dev]
 
-      - name: Release Summary
-        if: steps.release.outputs.released == 'true'
+      - name: Configure Git
         run: |
-            {
-              echo "## ✅ Release Successful"
-              echo "Version **${{ steps.release.outputs.tag }}** has been successfully published."
-              echo ""
-              echo "🔍 **[View the release on GitHub](${{ steps.release.outputs.link }})**"
-            } >> "$GITHUB_STEP_SUMMARY"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+      - name: Create and Publish Release
+        env:
+          # The command needs this token to create the GitHub Release.
+          GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_PAT }}
+        run: |
+          # Add --noop flag if this is a dry run
+          EXTRA_ARGS=""
+          if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+            EXTRA_ARGS="--noop"
+          fi
+          
+          semantic-release publish $EXTRA_ARGS
