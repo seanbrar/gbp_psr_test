@@ -4,7 +4,7 @@ name: Release
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Run in dry-run mode to preview changes'
+        description: 'Run in no-op mode to preview changes'
         required: false
         type: boolean
         default: true
@@ -19,46 +19,37 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-      id-token: write
+      id-token: write # For potential future trusted publishing integrations
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # CRITICAL FIX: Use token instead of ssh-key to match PSR authentication
           token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
 
-      - name: Set up Python
+      # This step is NOT needed for the build command, but can be useful
+      # for other steps you might add that run on the main runner.
+      # You can safely remove it if you don't need it.
+      - name: Set up Python on Runner
         uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-
-      # Install build dependencies in the runner (not the container)
-      - name: Install build dependencies  
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install build
 
       - name: Create and Publish Release
         id: release
         uses: python-semantic-release/python-semantic-release@v10.2.0
         with:
           github_token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
-          root_options: "-vv"  # Add verbose output for debugging
-          # Pass dry-run to PSR (note: parameter name for v10.2.0)
-          dry_run: ${{ github.event.inputs.dry_run == 'true' }}
+          # CORRECTED: Use `no_operation_mode` for dry runs
+          no_operation_mode: ${{ github.event.inputs.dry_run }}
 
       - name: Dry Run Summary
-        if: github.event.inputs.dry_run == 'true'
+        if: github.event.inputs.dry_run == true && steps.release.outputs.version != ''
         run: |
           {
             echo "## 🛡️ Dry Run Completed"
-            if [ "${{ steps.release.outputs.version }}" != "" ]; then
-              echo "A new release **v${{ steps.release.outputs.version }}** is ready to be published."
-            else
-              echo "No new release needed based on commit history."
-            fi
+            echo "A new release **v${{ steps.release.outputs.version }}** is ready to be published."
             echo "To publish, re-run this workflow with **dry_run** set to **false**."
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -69,7 +60,8 @@ jobs:
             echo "## ✅ Release Successful"
             echo "Version **${{ steps.release.outputs.tag }}** has been successfully published."
             echo ""
-            if [ "${{ steps.release.outputs.url }}" != "" ]; then
-              echo "🔍 **[View the release on GitHub](${{ steps.release.outputs.url }})**"
+            # CORRECTED: The output variable for the URL is `link`
+            if [ "${{ steps.release.outputs.link }}" != "" ]; then
+              echo "🔍 **[View the release on GitHub](${{ steps.release.outputs.link }})**"
             fi
           } >> "$GITHUB_STEP_SUMMARY"

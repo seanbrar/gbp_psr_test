@@ -191,7 +191,7 @@ convention = "google"
 # --- Semantic Release ---
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]
-build_command = "python -m build"
+build_command = "python -m pip install --upgrade pip build && python -m build"
 tag_format = "v{version}"
 allow_zero_version = true
 major_on_zero = false
