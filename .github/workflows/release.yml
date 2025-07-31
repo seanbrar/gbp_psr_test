@@ -34,25 +34,30 @@ jobs:
           # Tell semantic-release NOT to create the release itself
           vcs_release: false
 
+      - name: Debug Release Notes Output
+        # This step helps us see what's in the release_notes variable
+        if: steps.release.outputs.released == 'true'
+        run: |
+          echo "--- START OF RELEASE NOTES ---"
+          echo "${{ steps.release.outputs.release_notes }}"
+          echo "--- END OF RELEASE NOTES ---"
+
       - name: Create GitHub Release and Upload Artifacts
         if: steps.release.outputs.released == 'true'
         env:
           GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_PAT }}
         run: |
-          # Write the release notes to a temporary file
-          echo "${{ steps.release.outputs.release_notes }}" > release_notes.md
-
-          # Use --notes-file to pass the changelog as the release description
-          gh release create ${{ steps.release.outputs.tag }} \
+          # Pipe the release notes directly into the gh command
+          echo "${{ steps.release.outputs.release_notes }}" | gh release create ${{ steps.release.outputs.tag }} \
             --title "${{ steps.release.outputs.tag }}" \
-            --notes-file release_notes.md \
+            --notes-file - \
             dist/*
 
       - name: Dry Run Summary
         if: github.event.inputs.dry_run == true && steps.release.outputs.version != ''
         run: |
           {
-            echo "## 🛡️ Dry Run Completed"
+            echo "## 🚀 Dry Run Completed"
             echo "A new release **v${{ steps.release.outputs.version }}** is ready."
             echo "The following release notes would be generated:"
             echo "${{ steps.release.outputs.release_notes }}"
