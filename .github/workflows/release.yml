@@ -1,6 +1,6 @@
 name: Release
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       dry_run:
@@ -52,20 +52,24 @@ jobs:
       - name: Dry Run Summary
         if: github.event.inputs.dry_run == 'true'
         run: |
-          echo "## 🛡️ Dry Run Completed" >> "$GITHUB_STEP_SUMMARY"
-          if [ "${{ steps.release.outputs.version }}" != "" ]; then
-            echo "A new release **v${{ steps.release.outputs.version }}** is ready to be published." >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "No new release needed based on commit history." >> "$GITHUB_STEP_SUMMARY"
-          fi
-          echo "To publish, re-run this workflow with **dry_run** set to **false**." >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo "## 🛡️ Dry Run Completed"
+            if [ "${{ steps.release.outputs.version }}" != "" ]; then
+              echo "A new release **v${{ steps.release.outputs.version }}** is ready to be published."
+            else
+              echo "No new release needed based on commit history."
+            fi
+            echo "To publish, re-run this workflow with **dry_run** set to **false**."
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Release Summary
         if: steps.release.outputs.released == 'true'
         run: |
-          echo "## ✅ Release Successful" >> "$GITHUB_STEP_SUMMARY"
-          echo "Version **${{ steps.release.outputs.tag }}** has been successfully published." >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          if [ "${{ steps.release.outputs.url }}" != "" ]; then
-            echo "🔍 **[View the release on GitHub](${{ steps.release.outputs.url }})**" >> "$GITHUB_STEP_SUMMARY"
-          fi
+          {
+            echo "## ✅ Release Successful"
+            echo "Version **${{ steps.release.outputs.tag }}** has been successfully published."
+            echo ""
+            if [ "${{ steps.release.outputs.url }}" != "" ]; then
+              echo "🔍 **[View the release on GitHub](${{ steps.release.outputs.url }})**"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
