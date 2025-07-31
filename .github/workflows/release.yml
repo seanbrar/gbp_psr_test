@@ -1,6 +1,6 @@
 name: Release
 
-"on":
+on:
   workflow_dispatch:
     inputs:
       dry_run:
@@ -16,10 +16,7 @@ jobs:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: false
     permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      id-token: write # For potential future trusted publishing integrations
+      contents: write # Needed for gh release create and git push
 
     steps:
       - name: Checkout repository
@@ -28,29 +25,35 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
 
-      # This step is NOT needed for the build command, but can be useful
-      # for other steps you might add that run on the main runner.
-      # You can safely remove it if you don't need it.
-      - name: Set up Python on Runner
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Create and Publish Release
+      - name: Versioning and Changelog
         id: release
         uses: python-semantic-release/python-semantic-release@v10.2.0
         with:
           github_token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
-          # CORRECTED: Use `no_operation_mode` for dry runs
           no_operation_mode: ${{ github.event.inputs.dry_run }}
+          # Tell semantic-release NOT to create the release itself
+          vcs_release: false
+
+      - name: Create GitHub Release and Upload Artifacts
+        # Only run if a release was actually versioned
+        if: steps.release.outputs.released == 'true'
+        env:
+          # The PAT is needed for the gh CLI to authenticate
+          GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_PAT }}
+        run: |
+          gh release create ${{ steps.release.outputs.tag }} \
+            --title "${{ steps.release.outputs.tag }}" \
+            --notes "${{ steps.release.outputs.release_notes }}" \
+            dist/*
 
       - name: Dry Run Summary
         if: github.event.inputs.dry_run == true && steps.release.outputs.version != ''
         run: |
           {
             echo "## 🛡️ Dry Run Completed"
-            echo "A new release **v${{ steps.release.outputs.version }}** is ready to be published."
-            echo "To publish, re-run this workflow with **dry_run** set to **false**."
+            echo "A new release **v${{ steps.release.outputs.version }}** is ready."
+            echo "The following release notes would be generated:"
+            echo "${{ steps.release.outputs.release_notes }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Release Summary
@@ -59,9 +62,4 @@ jobs:
           {
             echo "## ✅ Release Successful"
             echo "Version **${{ steps.release.outputs.tag }}** has been successfully published."
-            echo ""
-            # CORRECTED: The output variable for the URL is `link`
-            if [ "${{ steps.release.outputs.link }}" != "" ]; then
-              echo "🔍 **[View the release on GitHub](${{ steps.release.outputs.link }})**"
-            fi
           } >> "$GITHUB_STEP_SUMMARY"
