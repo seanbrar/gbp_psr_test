@@ -70,3 +70,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 <!-- PSR-LINKS-START -->
 {{ macros.render_comparison_links(context.history) }}
 {%- endif -%}
+
+{%- block release_notes %}
+{#-
+  This block populates the 'release_notes' output.
+  It renders ONLY the sections for the most recent release.
+-#}
+{%- if context.history.released %}
+    {%- set releases = context.history.released.values() | sort(attribute='version', reverse=true) -%}
+    {%- set latest_release = releases[0] -%}
+    {{- macros.render_release_sections(latest_release.elements) -}}
+{%- endif %}
+{%- endblock release_notes -%}
