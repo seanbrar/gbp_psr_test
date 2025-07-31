@@ -45,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+---
 <!-- PSR-LINKS-START -->
 [0.7.0]: https://github.com/seanbrar/gbp_psr_test/releases/tag/v0.7.0
 [0.8.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.7.0...v0.8.0
+[0.8.1]: https://github.com/seanbrar/gbp_psr_test/compare/v0.8.0...v0.8.1
