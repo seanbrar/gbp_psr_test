@@ -48,22 +48,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 {% endblock footer %}
 
 {%- else -%}
-{#- UPDATE MODE: Prepend new release and regenerate links -#}
+{#- UPDATE MODE: Prepend new release and regenerate links (Corrected Logic) -#}
 {%- set content_parts = prev_content.split('<!-- PSR-INSERT-FLAG -->', 1) -%}
 {%- set old_content_and_links = content_parts[1] | default('') -%}
 {%- set old_releases, _, _ = old_content_and_links.partition('<!-- PSR-LINKS-START -->') %}
-{{- content_parts[0] -}}
-<!-- PSR-INSERT-FLAG -->
-{% if context.history.unreleased and macros.has_renderable_commits(context.history.unreleased) %}
 
-## [Unreleased]
-{{ macros.render_release_sections(context.history.unreleased) -}}
+{%- set releases = context.history.released.values() | sort(attribute='version', reverse=true) -%}
+{%- set latest_release = releases[0] -%}
+
+{{- content_parts[0] -}}
+## [{{ latest_release.version }}] - {{ latest_release.tagged_date.strftime('%Y-%m-%d') }}
+{{ macros.render_release_sections(latest_release.elements) }}
 {%- if old_releases | trim != "" %}
 
 ---
 
-{% endif %}
-{% endif -%}
+{%- endif -%}
 {{- old_releases | trim }}
 
 ---
