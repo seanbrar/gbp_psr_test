@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+<!-- PSR-INSERT-FLAG -->
+## [0.10.1] - 2025-07-31
+
+### 🐛 Bug Fixes
+
+- Test fix #3 ([`65fde53`](https://github.com/seanbrar/gbp_psr_test/commit/65fde535f4a9964c51171c6e97c24e1cf935cc60))
+
+---
+
 ## [0.10.0] - 2025-07-31
 
 ### ✨ Features
@@ -17,7 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Test fix #2 ([`563bc39`](https://github.com/seanbrar/gbp_psr_test/commit/563bc39b2ad78c6ccd63e19e1932d1af22a21401))
 - Test fix #1 ([`6da06f3`](https://github.com/seanbrar/gbp_psr_test/commit/6da06f312d4e0a551562a54d06cc4d7a37f3e1fc))
 
----## [0.9.2] - 2025-07-31
+---
+
+## [0.9.2] - 2025-07-31
 
 ### 🐛 Bug Fixes
 
@@ -89,7 +100,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
----
 <!-- PSR-LINKS-START -->
 [0.7.0]: https://github.com/seanbrar/gbp_psr_test/releases/tag/v0.7.0
 [0.8.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.7.0...v0.8.0
@@ -98,3 +108,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.9.1]: https://github.com/seanbrar/gbp_psr_test/compare/v0.9.0...v0.9.1
 [0.9.2]: https://github.com/seanbrar/gbp_psr_test/compare/v0.9.1...v0.9.2
 [0.10.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.9.2...v0.10.0
+[0.10.1]: https://github.com/seanbrar/gbp_psr_test/compare/v0.10.0...v0.10.1
