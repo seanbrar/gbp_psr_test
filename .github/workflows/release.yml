@@ -35,15 +35,17 @@ jobs:
           vcs_release: false
 
       - name: Create GitHub Release and Upload Artifacts
-        # Only run if a release was actually versioned
         if: steps.release.outputs.released == 'true'
         env:
-          # The PAT is needed for the gh CLI to authenticate
           GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_PAT }}
         run: |
+          # Write the release notes to a temporary file
+          echo "${{ steps.release.outputs.release_notes }}" > release_notes.md
+
+          # Use --notes-file to pass the changelog as the release description
           gh release create ${{ steps.release.outputs.tag }} \
             --title "${{ steps.release.outputs.tag }}" \
-            --notes "${{ steps.release.outputs.release_notes }}" \
+            --notes-file release_notes.md \
             dist/*
 
       - name: Dry Run Summary
