@@ -7,13 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+<!-- PSR-INSERT-FLAG -->
+## [0.12.2] - 2025-08-01
+
+### 🐛 Bug Fixes
+
+- **(release)** Increase verbosity level for semantic release logging ([`ca91286`](https://github.com/seanbrar/gbp_psr_test/commit/ca912860c04c59e4f82c434418cc7096b18bf5d5))
+
+---
+
 ## [0.12.1] - 2025-08-01
 
 ### 🐛 Bug Fixes
 
 - Remove unused semantic release configuration from pyproject.toml ([`fc8310d`](https://github.com/seanbrar/gbp_psr_test/commit/fc8310de9cc7dd0c43056279a32b1abd80d80b77))
 
----## [0.12.0] - 2025-08-01
+---
+
+## [0.12.0] - 2025-08-01
 
 ### ✨ Features
 
@@ -133,7 +144,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
----
 <!-- PSR-LINKS-START -->
 [0.7.0]: https://github.com/seanbrar/gbp_psr_test/releases/tag/v0.7.0
 [0.8.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.7.0...v0.8.0
@@ -146,6 +156,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.11.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.10.1...v0.11.0
 [0.12.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.11.0...v0.12.0
 [0.12.1]: https://github.com/seanbrar/gbp_psr_test/compare/v0.12.0...v0.12.1
+[0.12.2]: https://github.com/seanbrar/gbp_psr_test/compare/v0.12.1...v0.12.2
+
 ### 🐛 Bug Fixes
 
-- Remove unused semantic release configuration from pyproject.toml ([`fc8310d`](https://github.com/seanbrar/gbp_psr_test/commit/fc8310de9cc7dd0c43056279a32b1abd80d80b77))
+- **(release)** Increase verbosity level for semantic release logging ([`ca91286`](https://github.com/seanbrar/gbp_psr_test/commit/ca912860c04c59e4f82c434418cc7096b18bf5d5))
