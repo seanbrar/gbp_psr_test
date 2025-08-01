@@ -55,7 +55,8 @@
 ### 💥 Breaking Changes
 
 {% for desc in changes %}
-- {% if desc %}{{ (desc[0] | upper) + desc[1:] }}{% endif %}{% if not loop.last %}{{ '\n' }}{% endif %}
+- {% if desc and desc | length > 0 %}{{ (desc[0] | upper) + desc[1:] }}{% else %}{% endif %}
+{% if not loop.last %}{{ '\n' }}{% endif %}
 {% endfor %}
 
 {% endif %}
