@@ -25,39 +25,22 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
 
-      - name: Versioning and Changelog
+      - name: Create and Publish Release
         id: release
         uses: python-semantic-release/python-semantic-release@v10.2.0
         with:
+          # Use your PAT for authentication
           github_token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
+          # The no_operation_mode input for dry runs
           no_operation_mode: ${{ github.event.inputs.dry_run }}
-          # Tell semantic-release NOT to create the release itself
-          vcs_release: false
+          # We have removed `vcs_release: false` to re-enable PSR's release creation
 
-      - name: Debug Release Notes Output
-        # This step helps us see what's in the release_notes variable
-        if: steps.release.outputs.released == 'true'
-        run: |
-          echo "--- START OF RELEASE NOTES ---"
-          echo "${{ steps.release.outputs.release_notes }}"
-          echo "--- END OF RELEASE NOTES ---"
-
-      - name: Create GitHub Release and Upload Artifacts
-        if: steps.release.outputs.released == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.SEMANTIC_RELEASE_PAT }}
-        run: |
-          # Pipe the release notes directly into the gh command
-          echo "${{ steps.release.outputs.release_notes }}" | gh release create ${{ steps.release.outputs.tag }} \
-            --title "${{ steps.release.outputs.tag }}" \
-            --notes-file - \
-            dist/*
-
+      # The summary steps remain the same
       - name: Dry Run Summary
         if: github.event.inputs.dry_run == true && steps.release.outputs.version != ''
         run: |
           {
-            echo "## 🚀 Dry Run Completed"
+            echo "## 🛡️ Dry Run Completed"
             echo "A new release **v${{ steps.release.outputs.version }}** is ready."
             echo "The following release notes would be generated:"
             echo "${{ steps.release.outputs.release_notes }}"
