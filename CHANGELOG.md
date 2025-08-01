@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+<!-- PSR-INSERT-FLAG -->
+## [0.12.0] - 2025-08-01
+
+### ✨ Features
+
+- Test feat #3 ([`5f42f3e`](https://github.com/seanbrar/gbp_psr_test/commit/5f42f3e3e7682ea2a83a27043be3d7f187ece468))
+### ♻️ Refactoring
+
+- **(tests)** Remove unnecessary pytest marker from changelog update test ([`c01a613`](https://github.com/seanbrar/gbp_psr_test/commit/c01a613ef755bf9d500893e15b8833e5c9bc323b))
+
+---
+
 ## [0.11.0] - 2025-07-31
 
 ### ✨ Features
@@ -22,7 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Test refactor #1 ([`6509981`](https://github.com/seanbrar/gbp_psr_test/commit/6509981fb186abd2f3102177711baaa918a98133))
 
----## [0.10.1] - 2025-07-31
+---
+
+## [0.10.1] - 2025-07-31
 
 ### 🐛 Bug Fixes
 
@@ -114,7 +128,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
----
 <!-- PSR-LINKS-START -->
 [0.7.0]: https://github.com/seanbrar/gbp_psr_test/releases/tag/v0.7.0
 [0.8.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.7.0...v0.8.0
@@ -125,15 +138,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.10.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.9.2...v0.10.0
 [0.10.1]: https://github.com/seanbrar/gbp_psr_test/compare/v0.10.0...v0.10.1
 [0.11.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.10.1...v0.11.0
+[0.12.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.11.0...v0.12.0
+
 ### ✨ Features
 
-- Test feat #2 ([`9ee1897`](https://github.com/seanbrar/gbp_psr_test/commit/9ee189729723264a88abba3e523655816d38883b))
-- Add release notes block to changelog template ([`94aadcb`](https://github.com/seanbrar/gbp_psr_test/commit/94aadcb52ee71a2b584898b2c55c6481e4492f9e))
-### 🐛 Bug Fixes
-
-- Test fix #6 ([`4e27230`](https://github.com/seanbrar/gbp_psr_test/commit/4e27230fc5c0bb0e6632802e47c48d7963a78404))
-- Test fix #5 ([`f8dc6b0`](https://github.com/seanbrar/gbp_psr_test/commit/f8dc6b06c6e25af8efbf1f873ccee955c7cde603))
-- Test fix #4 ([`9a1210f`](https://github.com/seanbrar/gbp_psr_test/commit/9a1210ff5f74cc8a29ac022ec39b5c9b9d61598f))
+- Test feat #3 ([`5f42f3e`](https://github.com/seanbrar/gbp_psr_test/commit/5f42f3e3e7682ea2a83a27043be3d7f187ece468))
 ### ♻️ Refactoring
 
-- Test refactor #1 ([`6509981`](https://github.com/seanbrar/gbp_psr_test/commit/6509981fb186abd2f3102177711baaa918a98133))
+- **(tests)** Remove unnecessary pytest marker from changelog update test ([`c01a613`](https://github.com/seanbrar/gbp_psr_test/commit/c01a613ef755bf9d500893e15b8833e5c9bc323b))
