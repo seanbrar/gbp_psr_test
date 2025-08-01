@@ -29,6 +29,7 @@ jobs:
         id: release
         uses: python-semantic-release/python-semantic-release@v10.2.0
         with:
+          verbosity: '3'
           # Use your PAT for authentication
           github_token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
           # The no_operation_mode input for dry runs
