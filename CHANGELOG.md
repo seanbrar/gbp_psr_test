@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-<!-- PSR-INSERT-FLAG -->
-## [0.12.2] - 2025-08-01
+## [0.12.3] - 2025-08-01
+
+### 🐛 Bug Fixes
+
+- **(macros)** Improve conditional rendering for breaking changes in template ([`bf2c4d7`](https://github.com/seanbrar/gbp_psr_test/commit/bf2c4d7665edce1407855a3ae45df7fcdd0f2a52))
+
+---## [0.12.2] - 2025-08-01
 
 ### 🐛 Bug Fixes
 
@@ -144,6 +149,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+---
 <!-- PSR-LINKS-START -->
 [0.7.0]: https://github.com/seanbrar/gbp_psr_test/releases/tag/v0.7.0
 [0.8.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.7.0...v0.8.0
@@ -157,7 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.12.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.11.0...v0.12.0
 [0.12.1]: https://github.com/seanbrar/gbp_psr_test/compare/v0.12.0...v0.12.1
 [0.12.2]: https://github.com/seanbrar/gbp_psr_test/compare/v0.12.1...v0.12.2
-
+[0.12.3]: https://github.com/seanbrar/gbp_psr_test/compare/v0.12.2...v0.12.3
 ### 🐛 Bug Fixes
 
-- **(release)** Increase verbosity level for semantic release logging ([`ca91286`](https://github.com/seanbrar/gbp_psr_test/commit/ca912860c04c59e4f82c434418cc7096b18bf5d5))
+- **(macros)** Improve conditional rendering for breaking changes in template ([`bf2c4d7`](https://github.com/seanbrar/gbp_psr_test/commit/bf2c4d7665edce1407855a3ae45df7fcdd0f2a52))
