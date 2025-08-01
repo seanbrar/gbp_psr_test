@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-<!-- PSR-INSERT-FLAG -->
-## [0.12.0] - 2025-08-01
+## [0.12.1] - 2025-08-01
+
+### 🐛 Bug Fixes
+
+- Remove unused semantic release configuration from pyproject.toml ([`fc8310d`](https://github.com/seanbrar/gbp_psr_test/commit/fc8310de9cc7dd0c43056279a32b1abd80d80b77))
+
+---## [0.12.0] - 2025-08-01
 
 ### ✨ Features
 
@@ -128,6 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+---
 <!-- PSR-LINKS-START -->
 [0.7.0]: https://github.com/seanbrar/gbp_psr_test/releases/tag/v0.7.0
 [0.8.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.7.0...v0.8.0
@@ -139,10 +145,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.10.1]: https://github.com/seanbrar/gbp_psr_test/compare/v0.10.0...v0.10.1
 [0.11.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.10.1...v0.11.0
 [0.12.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.11.0...v0.12.0
+[0.12.1]: https://github.com/seanbrar/gbp_psr_test/compare/v0.12.0...v0.12.1
+### 🐛 Bug Fixes
 
-### ✨ Features
-
-- Test feat #3 ([`5f42f3e`](https://github.com/seanbrar/gbp_psr_test/commit/5f42f3e3e7682ea2a83a27043be3d7f187ece468))
-### ♻️ Refactoring
-
-- **(tests)** Remove unnecessary pytest marker from changelog update test ([`c01a613`](https://github.com/seanbrar/gbp_psr_test/commit/c01a613ef755bf9d500893e15b8833e5c9bc323b))
+- Remove unused semantic release configuration from pyproject.toml ([`fc8310d`](https://github.com/seanbrar/gbp_psr_test/commit/fc8310de9cc7dd0c43056279a32b1abd80d80b77))
