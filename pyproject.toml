@@ -204,6 +204,11 @@ prerelease = false
 template_dir = "templates"
 mode = "update"
 insertion_flag = "<!-- PSR-INSERT-FLAG -->"
+exclude_commit_patterns = [
+    "chore(.*):",
+    "style(.*):",
+    "test(.*):",
+]
 
 [tool.semantic_release.changelog.environment]
 lstrip_blocks = true

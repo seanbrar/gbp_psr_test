@@ -3,6 +3,11 @@ This file contains the macros for generating the changelog.
 It has been refactored for correctness and maintainability.
 #}
 
+{#-
+This dictionary maps the commit types from the parser to the
+human-readable section titles in the changelog. This is a
+presentational concern and belongs in the template.
+-#}
 {%- set sections = {
 "features": "✨ Features",
 "bug fixes": "🐛 Bug Fixes",
@@ -10,10 +15,14 @@ It has been refactored for correctness and maintainability.
 "reverts": "Reverts",
 "refactoring": "♻️ Refactoring",
 "documentation": "📚 Documentation",
-"build system": "📦 Build System & Dependencies"
+"build": "📦 Build System & Dependencies"
 } -%}
 
-{#- Macro to check if there are any commits that will actually be rendered -#}
+{#-
+Macro to check if there are any commits that will actually be rendered.
+It iterates through the defined sections to see if any corresponding
+commits exist in the release data.
+-#}
 {%- macro has_renderable_commits(commits_by_type) -%}
 {%- set ns = namespace(found=false) -%}
 {%- for section_key in sections.keys() -%}
@@ -46,7 +55,9 @@ It has been refactored for correctness and maintainability.
 
 {#-
 Macro to render breaking changes from a list of commits.
-This macro now correctly aggregates descriptions.
+This macro now correctly aggregates all breaking change descriptions
+from all commits in a release, de-duplicates them, and then renders them.
+This fixes a bug where descriptions could be lost.
 -#}
 {%- macro render_breaking_changes(commits) -%}
 {# First, collect all breaking change descriptions into a single list #}
@@ -56,8 +67,7 @@ This macro now correctly aggregates descriptions.
 {#
 KEY FIX: Use list concatenation (+) instead of `extend()`.
 `list.extend()` modifies in-place and returns `None` in Python,
-which caused the original bug when used with `set`.
-Concatenation creates a new list, which is the correct approach here.
+which caused the original bug. Concatenation creates a new list.
 #}
 {% set all_descriptions = all_descriptions + commit.breaking_descriptions %}
 {% endif %}
@@ -85,49 +95,50 @@ main template and avoids duplicating logic.
 {# Aggregate all commits from the release_data dictionary into a single flat list #}
 {%- set all_commits = release_data.values() | sum(start=[]) -%}
 
-{# 1. Render Breaking Changes first #}
+{# 1. Render Breaking Changes first, as they are most important. #}
 {%- set breaking_content = render_breaking_changes(all_commits) -%}
 {{- breaking_content -}}
 
-{# 2. Render all other sections #}
-{%- set has_breaking_changes = breaking_content | trim | length > 0 -%}
-
-{%- for section_key, section_title in sections.items() -%}
-{%- if release_data[section_key] -%}
-{#
-This block adds a separator only if there were breaking changes
-and this is the first regular section to be printed. This logic
-is now self-contained and much cleaner than the old flag-passing method.
-#}
-{%- if has_breaking_changes and loop.first %}
+{# Add a newline for spacing if breaking changes were rendered #}
+{%- if breaking_content | trim | length > 0 %}
 
 {% endif %}
+{# 2. Render all other sections based on the 'sections' dictionary. #}
+{%- for section_key, section_title in sections.items() -%}
+{%- if release_data[section_key] -%}
 ### {{ section_title }}
 
 {% for commit in release_data[section_key] | sort(attribute='scope') -%}
 -{{ render_commit_content(commit) }}
 {% endfor %}
+{%- if not loop.last %}
+{% endif %}
 {%- endif %}
 {%- endfor %}
 {%- endmacro %}
 
 
-{#- Macro to render the comparison links for all releases (no changes needed here) -#}
+{#- Macro to render the comparison links for all releases. -#}
 {%- macro render_comparison_links(history) -%}
 {%- set links = [] %}
-{%- set releases = history.released.values() | sort(attribute='version') %}
+{%- set releases = history.released.values() | list | sort(attribute='version', reverse=true) %}
 {%- if releases %}
-{%- set base_url = (("v" ~ releases[0].version) | compare_url("HEAD")) | replace("compare/v" ~ releases[0].version ~
+{#- Generate the base URL for creating links -#}
+{%- set base_url = (("v" ~ releases[-1].version) | compare_url("HEAD")) | replace("compare/v" ~ releases[-1].version ~
 "...HEAD", "") %}
+{#- Link for unreleased changes, comparing the latest release to HEAD -#}
 {%- if history.unreleased and has_renderable_commits(history.unreleased) %}
-{%- set unreleased_link = "[Unreleased]: " ~ (("v" ~ releases[-1].version) | compare_url("HEAD")) %}
+{%- set unreleased_link = "[Unreleased]: " ~ (("v" ~ releases[0].version) | compare_url("HEAD")) %}
 {%- set _ = links.append(unreleased_link) %}
 {%- endif %}
+{#- Links for each versioned release -#}
 {%- for release in releases %}
-{%- if loop.first %}
+{%- if loop.last %}
+{#- The oldest release links to its tag from the beginning of history -#}
 {%- set release_link = "[" ~ release.version ~ "]: " ~ (base_url ~ "releases/tag/v" ~ release.version) %}
 {%- else %}
-{%- set release_link = "[" ~ release.version ~ "]: " ~ (("v" ~ loop.previtem.version) | compare_url("v" ~
+{#- Subsequent releases link to the comparison between it and the previous one -#}
+{%- set release_link = "[" ~ release.version ~ "]: " ~ (("v" ~ loop.nextitem.version) | compare_url("v" ~
 release.version)) %}
 {%- endif %}
 {%- set _ = links.append(release_link) %}
