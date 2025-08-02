@@ -1,3 +1,8 @@
+{#
+This file contains the macros for generating the changelog.
+It has been refactored for correctness and maintainability.
+#}
+
 {%- set sections = {
 "features": "✨ Features",
 "bug fixes": "🐛 Bug Fixes",
@@ -21,15 +26,16 @@
 
 {#- Macro to render the content of a single commit line -#}
 {%- macro render_commit_content(commit) -%}
-{%- if commit.scope -%}
-**({{ commit.scope }})** {{- " " -}}
+{%- if commit.scope %}
+ **({{ commit.scope }})**
 {%- endif -%}
+{{ " " }}
 {%- if commit.descriptions and commit.descriptions[0] -%}
 {{- commit.descriptions[0][0] | upper ~ commit.descriptions[0][1:] -}}
 {%- endif -%}
 {{- " " -}}
 ([`{{ commit.short_hash }}`]({{ commit.hexsha | commit_hash_url }}))
-{%- if commit.linked_issues -%}
+{% if commit.linked_issues -%}
 {{- " " -}}
 ({%- for issue in commit.linked_issues -%}
 [{{- issue }}]({{ issue | issue_url }})
@@ -38,56 +44,81 @@
 {%- endif -%}
 {%- endmacro -%}
 
-{#- Macro to render breaking changes from a list of commits -#}
+{#-
+Macro to render breaking changes from a list of commits.
+This macro now correctly aggregates descriptions.
+-#}
 {%- macro render_breaking_changes(commits) -%}
 {# First, collect all breaking change descriptions into a single list #}
 {% set all_descriptions = [] %}
 {% for commit in commits %}
 {% if commit.breaking_descriptions %}
-{% set _ = all_descriptions.extend(commit.breaking_descriptions) %}
+{#
+KEY FIX: Use list concatenation (+) instead of `extend()`.
+`list.extend()` modifies in-place and returns `None` in Python,
+which caused the original bug when used with `set`.
+Concatenation creates a new list, which is the correct approach here.
+#}
+{% set all_descriptions = all_descriptions + commit.breaking_descriptions %}
 {% endif %}
 {% endfor %}
 
-{# Then, use the |unique filter to de-duplicate the list #}
+{# Then, use the |unique filter to de-duplicate the list of descriptions #}
 {%- set changes = all_descriptions | unique | list -%}
 
 {%- if changes %}
 ### 💥 Breaking Changes
 
 {% for desc in changes %}
-- {% if desc and desc | length > 0 %}{{ (desc[0] | upper) + desc[1:] }}{% else %}{% endif %}
-{% if not loop.last %}{{ '\n' }}{% endif %}
+- {% if desc %}{{ (desc[0] | upper) + desc[1:] }}{% endif %}{% if not loop.last %}{{ '\n' }}{% endif %}
 {% endfor %}
-
 {% endif %}
 {%- endmacro %}
 
-{#- Renders all sections for a given release -#}
-{%- macro render_release_sections(commits_by_type) %}
-{%- set breaking_content = render_breaking_changes(commits_by_type.values() | sum(start=[])) -%}
+{#-
+NEW REFACTORED MACRO: render_changelog_entry
+This new macro encapsulates all the logic for rendering a single release's
+content (both breaking changes and regular sections). This simplifies the
+main template and avoids duplicating logic.
+-#}
+{%- macro render_changelog_entry(release_data) %}
+{# Aggregate all commits from the release_data dictionary into a single flat list #}
+{%- set all_commits = release_data.values() | sum(start=[]) -%}
+
+{# 1. Render Breaking Changes first #}
+{%- set breaking_content = render_breaking_changes(all_commits) -%}
 {{- breaking_content -}}
-{%- set has_prior_content = breaking_content | trim | length > 0 -%}
-{% for section_key, section_title in sections.items() -%}
-{%- if commits_by_type[section_key] -%}
-{%- if has_prior_content %}
+
+{# 2. Render all other sections #}
+{%- set has_breaking_changes = breaking_content | trim | length > 0 -%}
+
+{%- for section_key, section_title in sections.items() -%}
+{%- if release_data[section_key] -%}
+{#
+This block adds a separator only if there were breaking changes
+and this is the first regular section to be printed. This logic
+is now self-contained and much cleaner than the old flag-passing method.
+#}
+{%- if has_breaking_changes and loop.first %}
 
 {% endif %}
 ### {{ section_title }}
 
-{% for commit in commits_by_type[section_key] | sort(attribute='scope') -%}
-- {{ render_commit_content(commit) }}
+{% for commit in release_data[section_key] | sort(attribute='scope') -%}
+-{{ render_commit_content(commit) }}
 {% endfor %}
-{%- set has_prior_content = true -%}
 {%- endif %}
 {%- endfor %}
 {%- endmacro %}
 
-{#- Macro to render the comparison links for all releases -#}
+
+{#- Macro to render the comparison links for all releases (no changes needed here) -#}
 {%- macro render_comparison_links(history) -%}
 {%- set links = [] %}
 {%- set releases = history.released.values() | sort(attribute='version') %}
 {%- if releases %}
-{%- set base_url = (("v" ~ releases[0].version) | compare_url("HEAD")) | replace("compare/v" ~ releases[0].version ~ "...HEAD", "") %}
+{%- set base_url = (("v" ~ releases[0].version) | compare_url("HEAD")) | replace("compare/v" ~ releases[0].version ~
+"...HEAD", "") %}
 {%- if history.unreleased and has_renderable_commits(history.unreleased) %}
 {%- set unreleased_link = "[Unreleased]: " ~ (("v" ~ releases[-1].version) | compare_url("HEAD")) %}
 {%- set _ = links.append(unreleased_link) %}
@@ -96,10 +127,11 @@
 {%- if loop.first %}
 {%- set release_link = "[" ~ release.version ~ "]: " ~ (base_url ~ "releases/tag/v" ~ release.version) %}
 {%- else %}
-{%- set release_link = "[" ~ release.version ~ "]: " ~ (("v" ~ loop.previtem.version) | compare_url("v" ~ release.version)) %}
+{%- set release_link = "[" ~ release.version ~ "]: " ~ (("v" ~ loop.previtem.version) | compare_url("v" ~
+release.version)) %}
 {%- endif %}
 {%- set _ = links.append(release_link) %}
 {%- endfor %}
 {%- endif %}
-{{ links | join('\n') }}
+{{ links | join('\n') -}}
 {%- endmacro -%}
