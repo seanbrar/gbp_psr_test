@@ -24,4 +24,5 @@ Each type will have multiple commits with different scopes to test grouping and 
 
 - Fixed memory leak in connection pool
 - Resolved authentication token validation issue
-- Fixed WebSocket connection timeout handling 
+- Fixed WebSocket connection timeout handling
+- Fixed race condition in API response handling 
