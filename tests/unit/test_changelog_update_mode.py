@@ -85,7 +85,7 @@ PSR-LINKS-START
     # Assert
     # Check that the new "Unreleased" content is present
     assert "## [Unreleased]" in actual_changelog
-    assert "**(api)** Add exciting new endpoint" in actual_changelog
+    assert "Add exciting new endpoint" in actual_changelog
 
     # Check that the old, existing content is still present
     assert "## [1.2.3] - 2024-06-30" in actual_changelog

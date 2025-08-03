@@ -39,8 +39,13 @@ This list defines the order in which sections should appear in the changelog.
 Macro to check if there are any commits that will actually be rendered.
 -#}
 {%- macro has_renderable_commits(commits_by_type) -%}
-{%- set matching_keys = sections.keys() | select('in', commits_by_type.keys()) | list -%}
-{%- if matching_keys -%}true{%- endif -%}
+{%- set ns = namespace(found=false) -%}
+{%- for section_key in sections.keys() -%}
+{%- if commits_by_type.get(section_key) and not ns.found -%}
+{%- set ns.found = true -%}
+{%- endif -%}
+{%- endfor -%}
+{%- if ns.found -%}true{%- endif -%}
 {%- endmacro -%}
 
 {#- Macro to render the content of a single commit line. -#}
@@ -51,7 +56,7 @@ Macro to check if there are any commits that will actually be rendered.
 {%- endif -%}
 {{- " " -}}
 ([`{{ commit.short_hash }}`]({{ commit.hexsha | commit_hash_url }}))
-{% if commit.linked_issues -%}
+{%- if commit.linked_issues -%}
 {{- " " -}}
 ({%- for issue in commit.linked_issues -%}
 [{{- issue }}]({{ issue | issue_url }})
@@ -94,8 +99,8 @@ Accepts a 'compact' boolean to control spacing for different contexts.
 
 {% endif %}
 {% for commit in commits_for_section.items | sort(attribute='scope') %}
--{{ render_commit_content(commit) -}}
-{%- endfor %}
+-{{ render_commit_content(commit) }}
+{% endfor %}
 
 {#- Mark that we have now output a section -#}
 {%- set ns.has_output = true -%}

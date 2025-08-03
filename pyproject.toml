@@ -218,6 +218,10 @@ keep_trailing_newline = true
 lstrip_blocks = true
 trim_blocks = true
 
+[tool.semantic_release.publish]
+dist_glob_patterns = ["dist/*"]
+upload_to_vcs_release = true
+
 # --- Setuptools ---
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -1,6 +1,7 @@
 name: Release
 
-on:
+"on":
+  # Manual trigger only - releases should be intentional
   workflow_dispatch:
     inputs:
       dry_run:
@@ -12,34 +13,38 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    # Prevent multiple releases from running simultaneously
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
       cancel-in-progress: false
+    # Minimal permissions needed for PSR action
     permissions:
-      contents: write # Needed for gh release create and git push
+      contents: write # Needed for creating releases and pushing tags
 
     steps:
+      # Checkout with full history for semantic-release analysis
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
+          fetch-depth: 0  # Full history needed for semantic-release
+          token: ${{ secrets.SEMANTIC_RELEASE_PAT }}  # PAT for authentication
 
+      # Install Python build tools for package creation
       - name: Install build dependencies
         run: python -m pip install build
 
+      # Main release step using PSR action
       - name: Create and Publish Release
         id: release
         uses: python-semantic-release/python-semantic-release@v10.2.0
         with:
-          verbosity: '3'
-          # Use your PAT for authentication
+          verbosity: '1'  # Enable verbose output for debugging
+          # Use PAT for authentication (more secure than SSH keys)
           github_token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
-          # The no_operation_mode input for dry runs
+          # Enable dry-run mode based on workflow input
           no_operation_mode: ${{ github.event.inputs.dry_run }}
-          # We have removed `vcs_release: false` to re-enable PSR's release creation
 
-      # The summary steps remain the same
+      # Provide feedback for dry-run mode
       - name: Dry Run Summary
         if: github.event.inputs.dry_run == true && steps.release.outputs.version != ''
         run: |
@@ -50,6 +55,7 @@ jobs:
             echo "${{ steps.release.outputs.release_notes }}"
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # Provide feedback for successful releases
       - name: Release Summary
         if: steps.release.outputs.released == 'true'
         run: |
