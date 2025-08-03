@@ -62,8 +62,9 @@ Macro to check if there are any commits that will actually be rendered.
 
 {#-
 Iterates through the defined sections and renders the commits for each.
+Accepts a 'compact' boolean to control spacing for different contexts.
 -#}
-{%- macro render_changelog_entry(release_data) -%}
+{%- macro render_changelog_entry(release_data, compact=False) -%}
 {#- Use a namespace to track if we've output a section yet for newline handling -#}
 {%- set ns = namespace(has_output=false) -%}
 
@@ -87,7 +88,11 @@ Iterates through the defined sections and renders the commits for each.
 
 {% endif -%}
 ### {{ section_title }}
+{#- In non-compact mode (the default), add a blank line for Keep a Changelog standard formatting. -#}
+{% if not compact %}
 
+
+{% endif %}
 {% for commit in commits_for_section.items | sort(attribute='scope') %}
 -{{ render_commit_content(commit) -}}
 {%- endfor %}
