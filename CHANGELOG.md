@@ -139,6 +139,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add performance monitoring and architectural modernization ([`498e846`](https://github.com/seanbrar/gbp_psr_test/commit/498e846356892f230d8ba210e2c3d249129abdac))
 
 <!-- PSR-LINKS-START -->
+[0.19.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.17.1...v0.18.0
 [0.17.1]: https://github.com/seanbrar/gbp_psr_test/compare/v0.17.0...v0.17.1
 [0.17.0]: https://github.com/seanbrar/gbp_psr_test/compare/v0.16.0...v0.17.0
