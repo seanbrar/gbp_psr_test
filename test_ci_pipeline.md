@@ -10,4 +10,9 @@ We need to create commits for:
 - performance improvements (Changed section)
 - documentation (Changed section)
 
-Each type will have multiple commits with different scopes to test grouping and alphabetization. 
+Each type will have multiple commits with different scopes to test grouping and alphabetization.
+
+## Features Added
+
+- Core functionality for testing
+- Multiple scope testing 
