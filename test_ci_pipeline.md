@@ -38,4 +38,5 @@ Each type will have multiple commits with different scopes to test grouping and 
 
 - Updated API documentation with examples
 - Added deployment guide
-- Improved README with setup instructions 
+- Improved README with setup instructions
+- Added troubleshooting guide 
