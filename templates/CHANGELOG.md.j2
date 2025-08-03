@@ -33,10 +33,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 {%- block content -%}
 {% if context.history.unreleased and macros.has_renderable_commits(context.history.unreleased) -%}
 ## [Unreleased]
+
 {{ macros.render_changelog_entry(context.history.unreleased) -}}
 {% endif -%}
 {% for version, release in context.history.released.items() -%}
 ## [{{ release.version }}] - {{ release.tagged_date.strftime('%Y-%m-%d') }}
+
 {{ macros.render_changelog_entry(release.elements) -}}
 {%- endfor -%}
 {%- endblock content -%}
@@ -59,6 +61,7 @@ and then regenerates the comparison links at the bottom.
 <!-- PSR-INSERT-FLAG -->
 {% if context.history.unreleased and macros.has_renderable_commits(context.history.unreleased) %}
 ## [Unreleased]
+
 {{ macros.render_changelog_entry(context.history.unreleased) -}}
 {% endif -%}
 {{- old_releases | trim }}
