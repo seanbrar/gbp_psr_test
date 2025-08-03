@@ -44,6 +44,13 @@ jobs:
           # Enable dry-run mode based on workflow input
           no_operation_mode: ${{ github.event.inputs.dry_run }}
 
+      - name: Publish to GitHub Release
+        if: steps.release.outputs.released == 'true'
+        uses: python-semantic-release/publish-action@v10.2.0
+        with:
+          github_token: ${{ secrets.SEMANTIC_RELEASE_PAT }}
+          tag: ${{ steps.release.outputs.tag }}
+
       # Provide feedback for dry-run mode
       - name: Dry Run Summary
         if: github.event.inputs.dry_run == true && steps.release.outputs.version != ''
