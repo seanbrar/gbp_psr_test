@@ -2,18 +2,23 @@
 
 _This release is published under the MIT License._
 
-{%- import ".macros.j2" as macros -%}
-{{- macros.render_changelog_entry(release.elements) -}}
+{% import ".macros.j2" as macros %}
+{#- Capture the output of the macro to a variable -#}
+{%- set release_body = macros.render_changelog_entry(release.elements) %}
 
-{%- set releases = context.history.released.values() | list -%}
-{%- set curr_release_index = releases.index(release) -%}
-{%- set prev_release_index = curr_release_index + 1 -%}
+{#- Print the captured output, trimming leading/trailing whitespace to fix spacing issues -#}
+{{ release_body | trim }}
 
-{%- if prev_release_index < releases | length -%}
-{%- set prev_version_tag = releases[prev_release_index].version.as_tag() -%}
+{# Get the list of all releases, sorted from newest to oldest to find the previous one #}
+{%- set all_releases = context.history.released.values() | list | sort(attribute='version', reverse=true) -%}
+
+{# Check if there are any previous releases to compare against #}
+{%- if all_releases -%}
+{%- set prev_release = all_releases[0] -%}
+{%- set prev_version_tag = prev_release.version.as_tag() -%}
 {%- set new_version_tag = release.version.as_tag() -%}
 
 ---
 
-**Detailed Changes**: [{{ prev_version_tag }}...{{ new_version_tag }}]({{ context.repo_url }}/compare/{{ prev_version_tag }}...{{ new_version_tag }})
-{%- endif -%}
+**Detailed Changes**: [{{ prev_version_tag }}...{{ new_version_tag }}]({{ prev_version_tag | compare_url(new_version_tag) }})
+{%- endif %}
