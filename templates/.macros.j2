@@ -1,6 +1,6 @@
 {#-
 This changelog uses Keep a Changelog format with categories mapped from
-conventional commit types. Categories like "Deprecated", "Removed", and 
+conventional commit types. Categories like "Deprecated", "Removed", and
 "Security" would require manual entries since they don't map to standard
 commit types.
 -#}
@@ -11,7 +11,7 @@ human-readable section titles in the changelog.
 -#}
 {%- set sections = {
 "features": "Added",
-"bug fixes": "Fixed", 
+"bug fixes": "Fixed",
 "performance improvements": "Changed",
 "documentation": "Changed"
 } -%}
@@ -23,9 +23,11 @@ e.g., {"Added": ["features"], "Changed": ["performance improvements", "documenta
 {%- set sections_by_title = {} -%}
 {%- for section_key, section_title in sections.items() -%}
 {%- if section_title not in sections_by_title -%}
-{%- set _ = sections_by_title.update({section_title: []}) -%}
+{%- set _ = sections_by_title.update({section_title: [section_key]}) -%}
+{%- else -%}
+{%- set current_list = sections_by_title[section_title] + [section_key] -%}
+{%- set _ = sections_by_title.update({section_title: current_list}) -%}
 {%- endif -%}
-{%- do sections_by_title[section_title].append(section_key) -%}
 {%- endfor -%}
 
 {#-
@@ -37,14 +39,8 @@ This list defines the order in which sections should appear in the changelog.
 Macro to check if there are any commits that will actually be rendered.
 -#}
 {%- macro has_renderable_commits(commits_by_type) -%}
-{%- set ns = namespace(found=false) -%}
-{%- for section_key in sections.keys() -%}
-{%- if commits_by_type.get(section_key) -%}
-{%- set ns.found = true -%}
-{%- break -%}
-{%- endif -%}
-{%- endfor -%}
-{%- if ns.found -%}true{%- endif -%}
+{%- set matching_keys = sections.keys() | select('in', commits_by_type.keys()) | list -%}
+{%- if matching_keys -%}true{%- endif -%}
 {%- endmacro -%}
 
 {#- Macro to render the content of a single commit line. -#}
@@ -68,41 +64,41 @@ Macro to check if there are any commits that will actually be rendered.
 Iterates through the defined sections and renders the commits for each.
 -#}
 {%- macro render_changelog_entry(release_data) -%}
-{#- Create a list of section titles that have commits for this release -#}
-{%- set populated_section_titles = [] -%}
+{#- Use a namespace to track if we've output a section yet for newline handling -#}
+{%- set ns = namespace(has_output=false) -%}
+
+{#- Single pass over the sections in their defined order -#}
 {%- for section_title in section_order -%}
 {%- if sections_by_title.get(section_title) -%}
-{%- set has_commits = namespace(found=false) -%}
+
+{#- Collect all commits for this section title into a single list using a namespace -#}
+{%- set commits_for_section = namespace(items=[]) -%}
 {%- for section_key in sections_by_title[section_title] -%}
-{%- if release_data[section_key] -%}
-{%- set has_commits.found = true -%}
-{%- break -%}
-{%- endif -%}
-{%- endfor -%}
-{%- if has_commits.found -%}
-{%- do populated_section_titles.append(section_title) -%}
-{%- endif -%}
+{%- if release_data.get(section_key) -%}
+{%- set commits_for_section.items = commits_for_section.items + release_data[section_key] -%}
 {%- endif -%}
 {%- endfor -%}
 
-{#- Now loop over only the populated section titles -#}
-{%- for section_title in populated_section_titles %}
+{#- If the collected list of commits is not empty, render the section -#}
+{%- if commits_for_section.items -%}
+
+{#- Print a newline before this section if it's not the first one rendered -#}
+{%- if ns.has_output %}
+
+{% endif -%}
 ### {{ section_title }}
 
-{% set all_commits_for_section = [] %}
-{% for section_key in sections_by_title[section_title] %}
-{% if release_data[section_key] %}
-{% do all_commits_for_section.extend(release_data[section_key]) %}
-{% endif %}
-{% endfor %}
-{% for commit in all_commits_for_section | sort(attribute='scope') %}
+{% for commit in commits_for_section.items | sort(attribute='scope') %}
 -{{ render_commit_content(commit) -}}
-{% endfor %}
-{%- if not loop.last %}
+{%- endfor %}
 
-{% endif %}
+{#- Mark that we have now output a section -#}
+{%- set ns.has_output = true -%}
+{%- endif -%}
+{%- endif -%}
 {%- endfor -%}
-{% if populated_section_titles %}
+{#- Add a final newline if any sections were rendered at all -#}
+{%- if ns.has_output %}
 
 {% endif %}
 {%- endmacro %}
@@ -118,7 +114,7 @@ Iterates through the defined sections and renders the commits for each.
 {#- Link for unreleased changes, comparing the latest release to HEAD -#}
 {%- if history.unreleased and has_renderable_commits(history.unreleased) %}
 {%- set unreleased_link = "[Unreleased]: " ~ (("v" ~ releases[0].version) | compare_url("HEAD")) %}
-{%- do links.append(unreleased_link) %}
+{%- set _ = links.append(unreleased_link) -%}
 {%- endif %}
 {#- Links for each versioned release -#}
 {%- for release in releases %}

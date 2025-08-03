@@ -214,7 +214,7 @@ exclude_commit_patterns = [
 ]
 
 [tool.semantic_release.changelog.environment]
-extensions = ["jinja2.ext.loopcontrols", "jinja2.ext.do"]
+keep_trailing_newline = true
 lstrip_blocks = true
 trim_blocks = true
 
