@@ -1,2 +1,19 @@
+## {{ release.version.as_tag() }} ({{ release.tagged_date.strftime('%Y-%m-%d') }})
+
+_This release is published under the MIT License._
+
 {%- import ".macros.j2" as macros -%}
 {{- macros.render_changelog_entry(release.elements) -}}
+
+{%- set releases = context.history.released.values() | list -%}
+{%- set curr_release_index = releases.index(release) -%}
+{%- set prev_release_index = curr_release_index + 1 -%}
+
+{%- if prev_release_index < releases | length -%}
+{%- set prev_version_tag = releases[prev_release_index].version.as_tag() -%}
+{%- set new_version_tag = release.version.as_tag() -%}
+
+---
+
+**Detailed Changes**: [{{ prev_version_tag }}...{{ new_version_tag }}]({{ context.repo_url }}/compare/{{ prev_version_tag }}...{{ new_version_tag }})
+{%- endif -%}
