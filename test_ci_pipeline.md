@@ -39,4 +39,8 @@ Each type will have multiple commits with different scopes to test grouping and 
 - Updated API documentation with examples
 - Added deployment guide
 - Improved README with setup instructions
-- Added troubleshooting guide 
+- Added troubleshooting guide
+
+## Edge Case Testing
+
+This commit includes a linked issue reference to test the template's handling of issue links in commit messages. 
