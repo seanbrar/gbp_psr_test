@@ -15,4 +15,6 @@ Each type will have multiple commits with different scopes to test grouping and 
 ## Features Added
 
 - Core functionality for testing
-- Multiple scope testing 
+- Multiple scope testing
+- API endpoint for user authentication
+- Database connection pooling 
