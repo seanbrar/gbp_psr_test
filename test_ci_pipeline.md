@@ -18,4 +18,9 @@ Each type will have multiple commits with different scopes to test grouping and 
 - Multiple scope testing
 - API endpoint for user authentication
 - Database connection pooling
-- WebSocket support for real-time updates 
+- WebSocket support for real-time updates
+
+## Bug Fixes
+
+- Fixed memory leak in connection pool
+- Resolved authentication token validation issue 
